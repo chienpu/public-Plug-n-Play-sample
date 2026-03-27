@@ -1,0 +1,77 @@
+{
+  "domain_pack": {
+    "id": "procurement-pack-v1.0",
+    "name": "Procurement Domain Pack",
+    "domain": "Procurement",
+    "version": "1.0",
+    "description": "Semantic execution unit for procurement coordination in campus environments. Receives cross-domain propagation from PdM Pack and executes procurement workflows.",
+    "author": "Huang, C.-P.",
+    "created": "2026-01"
+  },
+  "semantic_alignment_assets": {
+    "ontology": "Campus-Procurement-Ontology-v1.0",
+    "domain_scope": "FacilityManagement.Procurement",
+    "mappings": [
+      {"source": "ERP.vendorId",          "target": "VendorContract.id",         "unit": null},
+      {"source": "ERP.budgetCode",        "target": "BudgetAllocation.code",      "unit": null},
+      {"source": "CMMS.componentSpec",    "target": "ReplacementPart.spec",       "unit": null}
+    ]
+  },
+  "executable_semantic_assets": {
+    "reasoning_rules": [
+      {
+        "rule_id": "R-PRO-001",
+        "name": "Procurement Feasibility Check",
+        "condition": "incoming.trigger.type = 'ProcurementSignal' FROM pdm-pack-v1.0",
+        "tiaa": {
+          "trigger": {"type": "ProcurementNeeded",        "description": "Replacement part required — received from PdM Pack"},
+          "issue":   {"type": "ProcurementFeasibility",   "description": "Feasibility assessed: vendor availability and budget checked"},
+          "action":  {"type": "PurchaseOrderCreation",    "description": "Purchase order drafted and submitted"},
+          "actor":   {"type": "ProcurementOfficer",       "execution": "automated_draft_human_approval"}
+        }
+      },
+      {
+        "rule_id": "R-PRO-002",
+        "name": "Budget Constraint Escalation",
+        "condition": "budget.remaining < order.estimated_cost",
+        "tiaa": {
+          "trigger": {"type": "BudgetConstraint",         "description": "Available budget insufficient for purchase"},
+          "issue":   {"type": "BudgetApprovalRequired",   "description": "Budget exception requires management authorisation"},
+          "action":  {"type": "ManagerApproval",          "description": "Escalated to department manager"},
+          "actor":   {"type": "DepartmentManager",        "execution": "human_approval_required"}
+        }
+      },
+      {
+        "rule_id": "R-PRO-003",
+        "name": "Preferred Vendor Selection",
+        "condition": "vendor.hasActiveContract = true AND part.inVendorCatalog = true",
+        "tiaa": {
+          "trigger": {"type": "VendorAvailable",          "description": "Preferred vendor identified with active contract"},
+          "issue":   {"type": "OrderReadyToSubmit",       "description": "All conditions met for direct order"},
+          "action":  {"type": "DirectPurchaseOrder",      "description": "Purchase order submitted directly to vendor"},
+          "actor":   {"type": "ProcurementSystem",        "execution": "fully_automated"}
+        }
+      }
+    ],
+    "workflow_templates": [
+      {"id": "WF-PRO-001", "name": "QuotationRequest",    "steps": ["Identify", "RequestQuote", "Compare", "Select", "Approve"]},
+      {"id": "WF-PRO-002", "name": "PurchaseApproval",    "steps": ["Draft", "Review", "Approve", "Submit", "Track"]}
+    ]
+  },
+  "governance_and_provenance_assets": {
+    "provenance_policy": "PROV-O-full-trace",
+    "manifest": {
+      "id": "procurement-pack-v1.0",
+      "version": "1.0",
+      "compliance": ["ISO 19650", "PROV-O W3C"]
+    },
+    "audit_trail": {
+      "record_triggers": true,
+      "record_reasoning": true,
+      "record_actions": true,
+      "record_actors": true,
+      "link_to_pack_version": true,
+      "record_cross_domain_propagation": true
+    }
+  }
+}

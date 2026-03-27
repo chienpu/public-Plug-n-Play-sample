@@ -1,0 +1,75 @@
+{
+  "domain_pack": {
+    "id": "pdm-pack-v1.0",
+    "name": "Predictive Maintenance Domain Pack",
+    "domain": "PredictiveMaintenance",
+    "version": "1.0",
+    "description": "Semantic execution unit for HVAC predictive maintenance in campus environments. Encapsulates ontology, reasoning rules, workflow templates, and provenance policy.",
+    "author": "Huang, C.-P.",
+    "created": "2026-01"
+  },
+  "semantic_alignment_assets": {
+    "ontology": "STRIDE-HVAC-Ontology-v1.0",
+    "domain_scope": "FacilityManagement.PredictiveMaintenance",
+    "mappings": [
+      {"source": "IoT.temperature",        "target": "PerformanceData.value",    "unit": "Celsius"},
+      {"source": "BIM.GlobalId",           "target": "BuildingComponent.id",     "unit": null},
+      {"source": "CMMS.workOrderId",       "target": "MaintenanceTask.id",       "unit": null}
+    ]
+  },
+  "executable_semantic_assets": {
+    "reasoning_rules": [
+      {
+        "rule_id": "R-PdM-001",
+        "name": "Temperature Anomaly Detection",
+        "condition": "sensor.value > 33 AND sensor.type = 'Temperature'",
+        "tiaa": {
+          "trigger": {"type": "SensorAnomaly",        "description": "Temperature threshold exceeded"},
+          "issue":   {"type": "AssetRisk",             "description": "HVAC component at operational risk"},
+          "action":  {"type": "MaintenanceRequired",   "description": "Inspection or replacement required"},
+          "actor":   {"type": "FacilityTechnician",    "execution": "automated_or_human_in_loop"}
+        }
+      },
+      {
+        "rule_id": "R-PdM-002",
+        "name": "Repeated Anomaly — Component Degradation",
+        "condition": "anomalyCount(component) > 3 WITHIN 7 DAYS",
+        "tiaa": {
+          "trigger": {"type": "RepeatedAnomaly",       "description": "Persistent sensor deviations"},
+          "issue":   {"type": "ComponentDegradation",  "description": "Asset lifecycle risk identified"},
+          "action":  {"type": "ReplacementRequired",   "description": "Component replacement authorised"},
+          "actor":   {"type": "MaintenanceManager",    "execution": "human_approval_required"}
+        }
+      },
+      {
+        "rule_id": "R-PdM-003",
+        "name": "Cross-Domain Propagation — Procurement Trigger",
+        "condition": "action.type = 'ReplacementRequired'",
+        "tiaa": {
+          "trigger": {"type": "ProcurementSignal",     "description": "Replacement part needed — propagate to Procurement Pack"},
+          "propagates_to_pack": "procurement-pack-v1.0",
+          "propagation_type": "cross_domain"
+        }
+      }
+    ],
+    "workflow_templates": [
+      {"id": "WF-PdM-001", "name": "MaintenanceInspection",  "steps": ["Detect", "Assess", "Assign", "Execute", "Verify"]},
+      {"id": "WF-PdM-002", "name": "ComponentReplacement",   "steps": ["Authorise", "Procure", "Schedule", "Replace", "Test"]}
+    ]
+  },
+  "governance_and_provenance_assets": {
+    "provenance_policy": "PROV-O-full-trace",
+    "manifest": {
+      "id": "pdm-pack-v1.0",
+      "version": "1.0",
+      "compliance": ["ISO 19650", "PROV-O W3C"]
+    },
+    "audit_trail": {
+      "record_triggers": true,
+      "record_reasoning": true,
+      "record_actions": true,
+      "record_actors": true,
+      "link_to_pack_version": true
+    }
+  }
+}

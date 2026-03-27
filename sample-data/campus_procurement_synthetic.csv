@@ -1,0 +1,7 @@
+VendorId,VendorName,ComponentSpec,UnitPrice,LeadTimeDays,ContractStatus,GlobalId
+VEN-001,TaiwanHVAC Corp,HVAC-Filter-F300,1200,3,Active,IFC-100001
+VEN-002,Campus Supply Ltd,HVAC-Filter-F300,1350,5,Active,IFC-100001
+VEN-001,TaiwanHVAC Corp,AHU-Belt-B12,850,2,Active,IFC-100002
+VEN-003,BuildingParts Co,AHU-Belt-B12,900,7,Active,IFC-100002
+VEN-001,TaiwanHVAC Corp,Compressor-Unit-C5,8500,14,Active,IFC-100003
+VEN-004,IndustrialEquip,Compressor-Unit-C5,8200,21,Pending,IFC-100003

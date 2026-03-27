@@ -1,0 +1,12 @@
+{
+  "_note": "This file will be populated when you run Domain_Pack_TIAA_Simulation.py",
+  "_command": "python python/Domain_Pack_TIAA_Simulation.py",
+  "expected_metrics": [
+    "pdm_pack_loading_ms",
+    "procurement_pack_loading_ms",
+    "tiaa_cross_domain_query_ms",
+    "tiaa_propagation_steps",
+    "provenance_trace_nodes",
+    "agent_code_modifications"
+  ]
+}
